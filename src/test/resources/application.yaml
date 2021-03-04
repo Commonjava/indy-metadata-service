@@ -33,3 +33,37 @@ quarkus:
 kafka:
     bootstrap:
         servers: "localhost:9092"
+
+"%dev":
+    quarkus:
+        kubernetes-config:
+            enabled: false
+        log:
+            level: TRACE
+            min-level: TRACE
+            category:
+                "org.commonjava.service.metadata":
+                    level: TRACE
+            console:
+                enable: true
+            file:
+                enable: true
+                path: "/tmp/indy-metadata.log"
+                format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+                rotation:
+                    max-backup-index: 5
+                    max-file-size: 10M
+
+    kafka:
+        bootstrap:
+            servers: "localhost:9092"
+
+    # Configuring the incoming/outgoing channel
+    mp:
+        messaging:
+            incoming:
+                file-event-in:
+                    connector: smallrye-kafka
+                    topic: file-event
+                    value:
+                        deserializer: org.commonjava.event.file.FileEventDeserializer
