@@ -1,0 +1,15 @@
+<infinispan>
+    <cache-container>
+        <distributed-cache name="maven-metadata-key-cache">
+            <encoding media-type="application/x-protostream"/>
+            <expiration lifespan="14400000" interval="900000" /> <!-- expire in 4 days -->
+            <indexing>
+                <indexed-entities>
+                    <indexed-entity>metadata_key.MetadataKey</indexed-entity>
+                </indexed-entities>
+                <property name="default.indexmanager">near-real-time</property>
+                <property name="default.directory_provider">local-heap</property>
+            </indexing>
+        </distributed-cache>
+    </cache-container>
+</infinispan>
