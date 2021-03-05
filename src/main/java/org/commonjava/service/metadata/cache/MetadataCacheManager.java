@@ -99,17 +99,16 @@ public class MetadataCacheManager
 
     private List<MetadataKey> getMatches( StoreKey key )
     {
-        Query query = queryFactory.from( MetadataKey.class )
-                                  .having( "storeKey.packageType" )
-                                  .eq( key.getPackageType() )
-                                  .and()
-                                  .having( "storeKey.type" )
-                                  .eq( key.getType().toString() )
-                                  .and()
-                                  .having( "storeKey.name" )
-                                  .eq( key.getName() )
-                                  .build();
-        List<MetadataKey> matches = query.list();
+
+        Query query = queryFactory.create( String.format( "FROM %s k WHERE k.storeKey.packageType=:packageType "
+                                                                          + "AND k.storeKey.type=:type "
+                                                                          + "AND k.storeKey.name=:name",
+                                                          "metadata_key.MetadataKey" ) )
+                                  .setParameter( "packageType", key.getPackageType() )
+                                  .setParameter( "type", key.getType() )
+                                  .setParameter( "name", key.getName() );
+
+        List<MetadataKey> matches = query.execute().list();
 
         logger.debug( "Query metadataKeyCache for storeKey: {}, size: {}", key, matches.size() );
         return matches;

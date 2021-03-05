@@ -12,6 +12,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import java.util.Set;
+
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.microprofile.openapi.annotations.enums.ParameterIn.PATH;
 
@@ -37,6 +39,19 @@ public class MetadataResource
     {
         MetadataInfo info = controller.getMetadataInfo( packageType, type, name, path );
         return responseHelper.formatOkResponseWithJsonEntity( info );
+    }
+
+    @GET
+    @Path( "/{packageType}/{type: (hosted|group|remote)}/{name}" )
+    @Produces( APPLICATION_JSON )
+    public Response getAllPaths(
+                    final @Parameter( in = PATH, required = true ) @PathParam( "packageType" ) String packageType,
+                    final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group",
+                                    "remote" } ), required = true ) @PathParam( "type" ) String type,
+                    final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name )
+    {
+        Set<String> paths = controller.getAllPaths( packageType, type, name );
+        return responseHelper.formatOkResponseWithJsonEntity( paths );
     }
 
 }

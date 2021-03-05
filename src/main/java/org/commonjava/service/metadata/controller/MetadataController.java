@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Set;
 
 @ApplicationScoped
 public class MetadataController
@@ -26,5 +27,12 @@ public class MetadataController
         MetadataKey key = new MetadataKey( StoreKey.fromString( storeKeyStr ), path );
 
         return cacheManager.get( key );
+    }
+
+    public Set<String> getAllPaths( String packageType, String type, String name )
+    {
+
+        String storeKeyStr = packageType + ":" + type + ":" + name;
+        return cacheManager.getAllPaths( StoreKey.fromString( storeKeyStr ) );
     }
 }
