@@ -14,6 +14,8 @@ import org.commonjava.service.metadata.cache.infinispan.marshaller.VersioningMar
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.MetadataKey;
 import org.infinispan.protostream.BaseMarshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -87,7 +89,7 @@ public class MetadataCacheProducer
 
     private void registerTransformer()
     {
-        BasicCacheHandle<MetadataKey, MetadataKey> handler = cacheProducer.getBasicCache( METADATA_KEY_CACHE );
+        //BasicCacheHandle<MetadataKey, MetadataKey> handler = cacheProducer.getBasicCache( METADATA_KEY_CACHE );
 
 
         /*if ( handler.getCache() instanceof RemoteCache )

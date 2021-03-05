@@ -1,7 +1,10 @@
 <infinispan>
     <cache-container>
         <distributed-cache name="maven-metadata-key-cache">
-            <encoding media-type="application/x-protostream"/>
+            <encoding>
+                <key media-type="application/x-protostream"/>
+                <value media-type="application/x-protostream"/>
+            </encoding>
             <expiration lifespan="14400000" interval="900000" /> <!-- expire in 4 days -->
             <indexing>
                 <indexed-entities>

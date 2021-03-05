@@ -25,15 +25,15 @@ import org.infinispan.Cache;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
-import org.infinispan.client.hotrod.marshall.ProtoStreamMarshaller;
+import org.infinispan.client.hotrod.marshall.MarshallerUtil;
 import org.infinispan.commons.configuration.XMLStringConfiguration;
 import org.infinispan.configuration.cache.Configuration;
-import org.infinispan.counter.api.StrongCounter;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.protostream.BaseMarshaller;
 import org.infinispan.protostream.FileDescriptorSource;
 import org.infinispan.protostream.SerializationContext;
-import org.infinispan.protostream.annotations.ProtoSchemaBuilder;
+import org.infinispan.protostream.impl.ResourceUtils;
+import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.infinispan.query.remote.client.ProtobufMetadataManagerConstants.PROTOBUF_METADATA_CACHE_NAME;
 
 @ApplicationScoped
 public class CacheProducer
@@ -136,6 +134,9 @@ public class CacheProducer
                     {
                         throw new RuntimeException( "Cannot read cache configuration from file: " + cacheConf, e );
                     }
+
+                    logger.debug( "Cache config: {}", confStr );
+
                     cache = remoteCacheManager.administration().getOrCreateCache( named, new XMLStringConfiguration( confStr ) );
                     if ( cache == null )
                     {
@@ -164,7 +165,7 @@ public class CacheProducer
 
     public synchronized void registerProtoAndMarshallers( String protofile, List<BaseMarshaller> marshallers )
     {
-        SerializationContext ctx = ProtoStreamMarshaller.getSerializationContext( remoteCacheManager );
+        SerializationContext ctx = MarshallerUtil.getSerializationContext( remoteCacheManager );
         try
         {
             ctx.registerProtoFiles( FileDescriptorSource.fromResources( protofile ) );
@@ -188,9 +189,11 @@ public class CacheProducer
 
         // Retrieve metadata cache and register the new schema on the infinispan server too
         RemoteCache<String, String> metadataCache =
-                        remoteCacheManager.getCache(PROTOBUF_METADATA_CACHE_NAME);
+                        remoteCacheManager.getCache( ProtobufMetadataManagerConstants.PROTOBUF_METADATA_CACHE_NAME );
 
-        metadataCache.put( protofile, FileDescriptorSource.getResourceAsString( getClass(), "/" + protofile ));
+        logger.info( "Registering proto files: {}", protofile );
+
+        metadataCache.put( protofile, ResourceUtils.getResourceAsString( getClass(), "/" + protofile ));
 
     }
 
