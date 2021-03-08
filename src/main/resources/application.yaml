@@ -46,6 +46,9 @@ ispn:
         client:
             config: "/tmp"
 
+pathmap-api/mp-rest/url: http://localhost
+pathmap-api/mp-rest/scope: javax.inject.Singleton
+
 "%dev":
     quarkus:
         kubernetes-config:
@@ -85,3 +88,6 @@ ispn:
         hotrod:
             client:
                 config: "/tmp/hotrod-client.properties"
+
+    pathmap-api/mp-rest/url: http://localhost
+    pathmap-api/mp-rest/scope: javax.inject.Singleton
