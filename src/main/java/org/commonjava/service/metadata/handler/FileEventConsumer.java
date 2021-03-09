@@ -84,7 +84,7 @@ public class FileEventConsumer
             }
             catch ( final Exception e )
             {
-                logger.warn( "Failed to clear maven-metadata.xml: {}", path, e.getMessage() );
+                logger.warn( "Failed to clear maven-metadata.xml: {}", path, e );
             }
 
         }
