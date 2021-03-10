@@ -36,7 +36,7 @@ public class FileEventConsumer
     @Incoming("file-event-in")
     public void receive( FileEvent event ) {
 
-        logger.info("Got an event: {}", event.getSessionId());
+        logger.info("Got an event: {} #{}", event.getEventType().name(), event.getSessionId());
 
         if ( event.getEventType().equals( FileEventType.STORAGE ) || event.getEventType()
                                                                           .equals( FileEventType.DELETE ) )

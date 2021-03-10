@@ -13,6 +13,7 @@ import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.MetadataKey;
 import org.commonjava.service.metadata.model.StoreKey;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.enterprise.inject.Any;
@@ -32,32 +33,65 @@ public class FileEventConsumerTest
     @Any
     InMemoryConnector connector;
 
-    @Test
-    void testConsumeFileEvent()
+    String storeKey = "maven:hosted:build-0001";
+    String path = "org/commomjava/test-1.pom";
+    MetadataKey key;
+
+    @BeforeEach
+    void init()
     {
-        String storeKey = "maven:hosted:build-0001";
-        String path = "org/commomjava/test-1.pom";
         String mdPath = getMetadataPath( path );
-        MetadataKey key = new MetadataKey( StoreKey.fromString( storeKey ), mdPath );
+        key = new MetadataKey( StoreKey.fromString( storeKey ), mdPath );
         cacheManager.put( key, new MetadataInfo( null ) );
+    }
+
+    @Test
+    void testConsumeFileStoreEvent()
+    {
+
         MetadataInfo result = cacheManager.get( key );
         Assertions.assertNotNull( result );
 
-        InMemorySource<FileEvent> events = connector.source( "file-event-in");
-
-        FileEvent fileEvent = new FileEvent();
-        fileEvent.setTargetPath( path );
-        fileEvent.setStoreKey( storeKey );
-        fileEvent.setEventType( FileEventType.STORAGE );
-        fileEvent.setSessionId( "build-0001" );
+        FileEvent fileEvent = buildFileEvent( new FileEvent( FileEventType.STORAGE ) );
 
         // Use the send method to send a mock message to the events channel. So, our application will process this message.
-        events.send(fileEvent);
+        emit( fileEvent );
 
         // Check if the metadata file had been removed from the cache.
         result = cacheManager.get( key );
         Assertions.assertNull( result );
 
+    }
+
+    @Test
+    void testConsumeFileDeleteEvent()
+    {
+
+        MetadataInfo result = cacheManager.get( key );
+        Assertions.assertNotNull( result );
+
+        FileEvent fileEvent = buildFileEvent( new FileEvent( FileEventType.DELETE ) );
+        // Use the send method to send a mock message to the events channel. So, our application will process this message.
+        emit( fileEvent );
+
+        // Check if the metadata file had been removed from the cache.
+        result = cacheManager.get( key );
+        Assertions.assertNull( result );
+
+    }
+
+    private void emit( FileEvent fileEvent )
+    {
+        InMemorySource<FileEvent> events = connector.source( "file-event-in");
+        events.send(fileEvent);
+    }
+
+    private FileEvent buildFileEvent( FileEvent event )
+    {
+        event.setTargetPath( path );
+        event.setStoreKey( storeKey );
+        event.setSessionId( "build-0001" );
+        return event;
     }
 
 }
