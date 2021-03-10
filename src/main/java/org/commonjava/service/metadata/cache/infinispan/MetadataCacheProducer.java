@@ -1,6 +1,5 @@
 package org.commonjava.service.metadata.cache.infinispan;
 
-import org.commonjava.service.metadata.config.ISPNConfiguration;
 import org.commonjava.service.metadata.cache.MavenMetadataCache;
 import org.commonjava.service.metadata.cache.MavenMetadataKeyCache;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.MetadataInfoMarshaller;
@@ -11,13 +10,13 @@ import org.commonjava.service.metadata.cache.infinispan.marshaller.SnapshotVersi
 import org.commonjava.service.metadata.cache.infinispan.marshaller.StoreKeyMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.StoreTypeMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.VersioningMarshaller;
+import org.commonjava.service.metadata.config.ISPNConfiguration;
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.MetadataKey;
+import org.infinispan.Cache;
+import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.protostream.BaseMarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -31,8 +30,8 @@ public class MetadataCacheProducer
 
     private static final String METADATA_CACHE = "maven-metadata-cache";
 
-    /*@Inject
-    private MavenMetadataCacheListener cacheListener;*/
+    @Inject
+    private MavenMetadataCacheListener cacheListener;
 
     @Inject
     private CacheProducer cacheProducer;
@@ -78,28 +77,24 @@ public class MetadataCacheProducer
             keyMarshallers.add( new StoreTypeMarshaller() );
             cacheProducer.registerProtoAndMarshallers( "metadata_key.proto", keyMarshallers );
         }
-        return cacheProducer.getBasicCache( METADATA_KEY_CACHE );
+
+        BasicCacheHandle<MetadataKey, MetadataKey> handler = cacheProducer.getBasicCache( METADATA_KEY_CACHE );
+
+        addListener( handler );
+
+        return handler;
     }
 
-    @PostConstruct
-    public void initIndexing()
+    private void addListener( BasicCacheHandle handler )
     {
-        registerTransformer();
-    }
-
-    private void registerTransformer()
-    {
-        //BasicCacheHandle<MetadataKey, MetadataKey> handler = cacheProducer.getBasicCache( METADATA_KEY_CACHE );
-
-
-        /*if ( handler.getCache() instanceof RemoteCache )
+        if ( handler.getCache() instanceof RemoteCache )
         {
             ((RemoteCache)handler.getCache()).addClientListener( cacheListener );
         }
         else
         {
             ((Cache)handler.getCache()).addListener( cacheListener );
-        }*/
+        }
     }
 
 }
