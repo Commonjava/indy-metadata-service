@@ -1,5 +1,14 @@
 version: '3.5'
 services:
+  indy-metadata:
+    build:
+      context: .
+      dockerfile: src/main/image/Dockerfile.jvm
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/:/opt/indy-metadata/
+
   infinispan:
     image: infinispan/server:11.0.9.Final
     ports:
