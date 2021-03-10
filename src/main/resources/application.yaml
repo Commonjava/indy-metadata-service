@@ -44,7 +44,9 @@ ispn:
     enabled: true
     hotrod:
         client:
-            config: "/tmp"
+            config: "/opt/indy-metadata/hotrod-client.properties"
+    cache:
+        dir: "/opt/indy-metadata"
 
 pathmap-api/mp-rest/url: http://localhost
 pathmap-api/mp-rest/scope: javax.inject.Singleton
@@ -84,7 +86,6 @@ pathmap-api/mp-rest/scope: javax.inject.Singleton
                         deserializer: org.commonjava.event.file.FileEventDeserializer
 
     ispn:
-        enabled: true
         hotrod:
             client:
                 config: "/tmp/hotrod-client.properties"
