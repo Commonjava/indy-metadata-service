@@ -124,6 +124,10 @@
             <artifactId>infinispan-remote-query-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-query</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.infinispan.protostream</groupId>
             <artifactId>protostream</artifactId>
             <version>${protostreamVersion}</version>
