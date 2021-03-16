@@ -27,7 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <o11phant.version>1.3-SNAPSHOT</o11phant.version>
+        <o11phant.version>1.4-SNAPSHOT</o11phant.version>
         <indy-event.version>1.0-SNAPSHOT</indy-event.version>
         <infinispan.version>11.0.8.Final</infinispan.version>
         <protostreamVersion>4.3.5.Final</protostreamVersion>
