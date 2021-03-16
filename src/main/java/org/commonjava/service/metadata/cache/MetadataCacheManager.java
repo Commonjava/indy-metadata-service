@@ -5,8 +5,8 @@ import org.commonjava.service.metadata.cache.infinispan.CacheHandle;
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.MetadataKey;
 import org.commonjava.service.metadata.model.StoreKey;
+import org.infinispan.Cache;
 import org.infinispan.client.hotrod.RemoteCache;
-import org.infinispan.client.hotrod.Search;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
@@ -46,10 +46,10 @@ public class MetadataCacheManager
             this.queryFactory = org.infinispan.client.hotrod.Search.getQueryFactory(
                             (RemoteCache) metadataKeyCache.getCache() );
         }
-        /*else
+        else
         {
-            this.queryFactory = Search.getQueryFactory( (Cache) metadataKeyCache.getCache() );
-        }*/
+            this.queryFactory = org.infinispan.query.Search.getQueryFactory( (Cache) metadataKeyCache.getCache() );
+        }
     }
 
     public MetadataCacheManager( CacheHandle<MetadataKey, MetadataInfo> metadataCache,
@@ -57,7 +57,6 @@ public class MetadataCacheManager
     {
         this.metadataCache = metadataCache;
         this.metadataKeyCache = metadataKeyCache;
-        //this.queryFactory = Search.getQueryFactory( metadataKeyCache.getCache() );
     }
 
     public void put( MetadataKey metadataKey, MetadataInfo metadataInfo )
@@ -100,10 +99,14 @@ public class MetadataCacheManager
     private List<MetadataKey> getMatches( StoreKey key )
     {
 
+        String entity = ( metadataKeyCache.getCache() instanceof RemoteCache ) ?
+                        "metadata_key.MetadataKey" :
+                        "org.commonjava.service.metadata.model.MetadataKey";
+
         Query query = queryFactory.create( String.format( "FROM %s k WHERE k.storeKey.packageType=:packageType "
                                                                           + "AND k.storeKey.type=:type "
                                                                           + "AND k.storeKey.name=:name",
-                                                          "metadata_key.MetadataKey" ) )
+                                                          entity ) )
                                   .setParameter( "packageType", key.getPackageType() )
                                   .setParameter( "type", key.getType() )
                                   .setParameter( "name", key.getName() );
