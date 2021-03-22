@@ -4,6 +4,9 @@ import org.commonjava.event.file.FileEvent;
 import org.commonjava.event.file.FileEventType;
 import org.commonjava.service.metadata.cache.MetadataCacheManager;
 import org.commonjava.service.metadata.client.pathmapped.PathmappedService;
+import org.commonjava.service.metadata.client.repository.ArtifactStore;
+import org.commonjava.service.metadata.client.repository.RepositoryService;
+import org.commonjava.service.metadata.client.repository.StoreListingDTO;
 import org.commonjava.service.metadata.model.StoreKey;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -25,6 +28,10 @@ public class FileEventConsumer
     @Inject
     @RestClient
     PathmappedService pathmappedService;
+
+    @Inject
+    @RestClient
+    RepositoryService repositoryService;
 
     @Inject
     MetadataCacheManager cacheManager;
@@ -64,22 +71,11 @@ public class FileEventConsumer
                         logger.info( "Metadata file {} in store {} cleared.", clearPath, key );
                     }
 
-                    // TODO talk to repository service to get affactedBy groups and do clear
-                    /*final Set<Group> groups = dataManager.affectedBy( Arrays.asList( key ), event.getEventMetadata() );
-
-                    if ( groups != null )
+                    StoreListingDTO<ArtifactStore> listingDTO = repositoryService.getGroupsAffectedBy( key.toString() );
+                    for ( final ArtifactStore group : listingDTO.items )
                     {
-                        long begin = System.currentTimeMillis();
-                        for ( final Group group : groups )
-                        {
-                            if ( doClear( group, clearPath ) )
-                            {
-                                cacheManager.remove( group.getKey(), clearPath );
-                            }
-                        }
-                        logger.info( "Clearing metadata file {} for {} groups affected by {}, timeMillis: {}", clearPath,
-                                     groups.size(), key, ( System.currentTimeMillis() - begin ) );
-                    }*/
+                        cacheManager.remove( group.key, clearPath );
+                    }
                 }
             }
             catch ( final Exception e )

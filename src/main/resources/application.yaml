@@ -51,6 +51,9 @@ ispn:
 pathmap-api/mp-rest/url: http://localhost
 pathmap-api/mp-rest/scope: javax.inject.Singleton
 
+repo-service-api/mp-rest/url: http://localhost
+repo-service-api/mp-rest/scope: javax.inject.Singleton
+
 "%dev":
     quarkus:
         kubernetes-config:
