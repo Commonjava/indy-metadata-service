@@ -14,6 +14,8 @@ import javax.inject.Inject;
 public class RepositoryServiceTest
 {
 
+    public static final String AFFECTED_GROUPS = "maven:group:public";
+
     @Inject
     @RestClient
     RepositoryService repositoryService;
@@ -24,6 +26,6 @@ public class RepositoryServiceTest
         StoreListingDTO<ArtifactStore> dto = repositoryService.getGroupsAffectedBy( "maven:remote:central" );
         Assertions.assertNotNull( dto );
         Assertions.assertEquals( 1, dto.items.size() );
-        Assertions.assertEquals( "maven:group:public", dto.items.get( 0 ).key.toString() );
+        Assertions.assertEquals( AFFECTED_GROUPS, dto.items.get( 0 ).key.toString() );
     }
 }

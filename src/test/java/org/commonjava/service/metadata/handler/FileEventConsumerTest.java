@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
+import static org.commonjava.service.metadata.client.RepositoryServiceTest.AFFECTED_GROUPS;
 import static org.commonjava.service.metadata.handler.MetadataUtil.getMetadataPath;
 
 @QuarkusTest
@@ -36,6 +37,7 @@ public class FileEventConsumerTest
     String storeKey = "maven:hosted:build-0001";
     String path = "org/commomjava/test-1.pom";
     MetadataKey key;
+    MetadataKey groupKey;
 
     @BeforeEach
     void init()
@@ -43,6 +45,9 @@ public class FileEventConsumerTest
         String mdPath = getMetadataPath( path );
         key = new MetadataKey( StoreKey.fromString( storeKey ), mdPath );
         cacheManager.put( key, new MetadataInfo( null ) );
+
+        groupKey = new MetadataKey( StoreKey.fromString( AFFECTED_GROUPS ), mdPath );
+        cacheManager.put( groupKey, new MetadataInfo( null ) );
     }
 
     @Test
@@ -51,6 +56,9 @@ public class FileEventConsumerTest
 
         MetadataInfo result = cacheManager.get( key );
         Assertions.assertNotNull( result );
+
+        MetadataInfo groupResult = cacheManager.get( groupKey );
+        Assertions.assertNotNull( groupResult );
 
         FileEvent fileEvent = buildFileEvent( new FileEvent( FileEventType.STORAGE ) );
 
@@ -61,6 +69,9 @@ public class FileEventConsumerTest
         result = cacheManager.get( key );
         Assertions.assertNull( result );
 
+        groupResult = cacheManager.get( groupKey );
+        Assertions.assertNull( groupResult );
+
     }
 
     @Test
@@ -70,6 +81,9 @@ public class FileEventConsumerTest
         MetadataInfo result = cacheManager.get( key );
         Assertions.assertNotNull( result );
 
+        MetadataInfo groupResult = cacheManager.get( groupKey );
+        Assertions.assertNotNull( groupResult );
+
         FileEvent fileEvent = buildFileEvent( new FileEvent( FileEventType.DELETE ) );
         // Use the send method to send a mock message to the events channel. So, our application will process this message.
         emit( fileEvent );
@@ -77,6 +91,9 @@ public class FileEventConsumerTest
         // Check if the metadata file had been removed from the cache.
         result = cacheManager.get( key );
         Assertions.assertNull( result );
+
+        groupResult = cacheManager.get( groupKey );
+        Assertions.assertNull( groupResult );
 
     }
 
