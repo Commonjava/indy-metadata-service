@@ -72,9 +72,17 @@ public class FileEventConsumer
                     }
 
                     StoreListingDTO<ArtifactStore> listingDTO = repositoryService.getGroupsAffectedBy( key.toString() );
-                    for ( final ArtifactStore group : listingDTO.items )
+                    if ( listingDTO.items != null )
                     {
-                        cacheManager.remove( group.key, clearPath );
+                        for ( final ArtifactStore group : listingDTO.items )
+                        {
+                            if ( doClear( group.key, clearPath ) )
+                            {
+                                cacheManager.remove( group.key, clearPath );
+                                logger.info( "Metadata file {} in store {} cleared.", clearPath, group.key );
+                            }
+                        }
+                        logger.info( "Clearing metadata file {} for {} groups affected by {}", clearPath, listingDTO.items.size(), key );
                     }
                 }
             }
