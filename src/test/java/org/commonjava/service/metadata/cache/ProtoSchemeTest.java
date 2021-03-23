@@ -2,11 +2,15 @@ package org.commonjava.service.metadata.cache;
 
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
+import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.MetadataInfoMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.MetadataKeyMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.MetadataMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.PluginMarshaller;
+import org.commonjava.service.metadata.cache.infinispan.marshaller.SnapshotMarshaller;
+import org.commonjava.service.metadata.cache.infinispan.marshaller.SnapshotVersionMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.StoreKeyMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.StoreTypeMarshaller;
 import org.commonjava.service.metadata.cache.infinispan.marshaller.VersioningMarshaller;
@@ -38,6 +42,8 @@ public class ProtoSchemeTest
         ctx.registerMarshaller( new MetadataMarshaller() );
         ctx.registerMarshaller( new VersioningMarshaller() );
         ctx.registerMarshaller( new PluginMarshaller() );
+        ctx.registerMarshaller( new SnapshotMarshaller() );
+        ctx.registerMarshaller( new SnapshotVersionMarshaller() );
 
         Metadata metadata = new Metadata();
         metadata.setGroupId( "groupId" );
@@ -46,6 +52,15 @@ public class ProtoSchemeTest
 
         Versioning versioning = new Versioning();
         versioning.setVersions( Arrays.asList("1.0", "1.1", "1.2") );
+
+        SnapshotVersion snapshotVersion = new SnapshotVersion();
+        snapshotVersion.setVersion( "1.3-SNAPSHOT" );
+        versioning.setSnapshotVersions( Arrays.asList( snapshotVersion ) );
+
+        Snapshot snapshot = new Snapshot();
+        snapshot.setBuildNumber( 100 );
+        versioning.setSnapshot( snapshot );
+
         metadata.setVersioning( versioning );
 
         Plugin plugin = new Plugin();
@@ -65,6 +80,8 @@ public class ProtoSchemeTest
         assertEquals( 1, ( (MetadataInfo) out ).getMetadata().getPlugins().size() );
         assertEquals( 3, ( (MetadataInfo) out ).getMetadata().getVersioning().getVersions().size() );
         assertTrue( ( (MetadataInfo) out ).getMetadata().getVersioning().getVersions().contains( "1.0" ) );
+        assertEquals( 1, ((MetadataInfo) out ).getMetadata().getVersioning().getSnapshotVersions().size() );
+        assertEquals( 100, ( (MetadataInfo) out ).getMetadata().getVersioning().getSnapshot().getBuildNumber() );
 
     }
 
