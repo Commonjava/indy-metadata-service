@@ -17,6 +17,7 @@ public class VersioningMarshaller implements MessageMarshaller<Versioning>
         versioning.setRelease( reader.readString( "release" ) );
         versioning.setLatest( reader.readString( "latest" ) );
         versioning.setLastUpdated( reader.readString( "lastUpdated" ) );
+        versioning.setSnapshot( reader.readObject( "snapshot", Snapshot.class ) );
         versioning.setSnapshotVersions( reader.readCollection( "snapshotVersions", new ArrayList<SnapshotVersion>(), SnapshotVersion.class ) );
         versioning.setVersions( reader.readCollection( "versions", new ArrayList<String>(), String.class ) );
         return versioning;
