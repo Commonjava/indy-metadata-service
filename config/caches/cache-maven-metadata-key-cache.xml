@@ -1,6 +1,6 @@
 <infinispan>
     <cache-container>
-        <distributed-cache name="maven-metadata-key-cache">
+        <distributed-cache name="maven-metadata-key-cache" remote-timeout="60000">
             <encoding>
                 <key media-type="application/x-protostream"/>
                 <value media-type="application/x-protostream"/>
