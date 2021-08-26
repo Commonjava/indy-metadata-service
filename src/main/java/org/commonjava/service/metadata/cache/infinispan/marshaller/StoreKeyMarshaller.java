@@ -21,9 +21,9 @@ public class StoreKeyMarshaller implements MessageMarshaller<StoreKey>
     @Override
     public void writeTo( ProtoStreamWriter writer, StoreKey storeKey ) throws IOException
     {
-        writer.writeString( "name", storeKey.getName() );
         writer.writeString( "packageType", storeKey.getPackageType() );
         writer.writeEnum( "type", storeKey.getType());
+        writer.writeString( "name", storeKey.getName() );
     }
 
     @Override
