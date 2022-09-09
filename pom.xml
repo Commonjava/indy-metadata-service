@@ -27,10 +27,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <o11phant.version>1.4-SNAPSHOT</o11phant.version>
         <indy-event.version>1.0-SNAPSHOT</indy-event.version>
         <infinispan.version>11.0.8.Final</infinispan.version>
         <protostreamVersion>4.3.5.Final</protostreamVersion>
+        <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+        <quarkus.platform.version>2.3.0.Final</quarkus.platform.version>
+        <quarkus-plugin.version>2.3.0.Final</quarkus-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -39,6 +42,13 @@
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-bom</artifactId>
                 <version>${infinispan.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>${quarkus.platform.artifact-id}</artifactId>
+                <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -101,9 +111,8 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.commonjava.util</groupId>
-            <artifactId>o11yphant-honeycomb-api</artifactId>
-            <version>${o11phant.version}</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.commonjava.indy.service</groupId>
@@ -153,6 +162,11 @@
             <artifactId>maven-repository-metadata</artifactId>
             <version>3.6.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
 
         <!-- for unit test -->
         <dependency>
@@ -189,6 +203,16 @@
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>ru.concerteza.buildnumber</groupId>
