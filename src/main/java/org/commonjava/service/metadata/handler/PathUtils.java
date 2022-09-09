@@ -1,6 +1,7 @@
 package org.commonjava.service.metadata.handler;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 
 public final class PathUtils {
 
