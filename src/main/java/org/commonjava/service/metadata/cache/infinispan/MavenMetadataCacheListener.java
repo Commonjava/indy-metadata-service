@@ -1,6 +1,6 @@
 package org.commonjava.service.metadata.cache.infinispan;
 
-import org.commonjava.service.metadata.client.pathmapped.PathmappedService;
+import org.commonjava.service.metadata.client.storage.StorageService;
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.MetadataKey;
 import org.commonjava.service.metadata.model.StoreKey;
@@ -25,7 +25,7 @@ public class MavenMetadataCacheListener
 
     @Inject
     @RestClient
-    private PathmappedService pathmappedService;
+    private StorageService storageService;
 
     @CacheEntryExpired
     public void metadataExpired( CacheEntryExpiredEvent<MetadataKey, MetadataInfo> event )
@@ -48,7 +48,7 @@ public class MavenMetadataCacheListener
 
         try
         {
-            pathmappedService.delete( storeKey.getPackageType(), storeKey.getType().name(), storeKey.getName(), path );
+            storageService.delete( storeKey.toString(), path );
         }
         catch ( Exception e )
         {

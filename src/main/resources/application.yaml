@@ -42,8 +42,8 @@ ispn:
     cache:
         dir: "/opt/indy-metadata"
 
-pathmap-api/mp-rest/url: http://localhost
-pathmap-api/mp-rest/scope: javax.inject.Singleton
+storage-service-api/mp-rest/url: http://localhost
+storage-service-api/mp-rest/scope: javax.inject.Singleton
 
 repo-service-api/mp-rest/url: http://localhost
 repo-service-api/mp-rest/scope: javax.inject.Singleton
@@ -87,5 +87,5 @@ repo-service-api/mp-rest/scope: javax.inject.Singleton
             client:
                 config: "/tmp/hotrod-client.properties"
 
-    pathmap-api/mp-rest/url: http://localhost
-    pathmap-api/mp-rest/scope: javax.inject.Singleton
+    storage-api/mp-rest/url: http://localhost
+    storage-api/mp-rest/scope: javax.inject.Singleton
