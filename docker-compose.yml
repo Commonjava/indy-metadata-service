@@ -9,14 +9,6 @@ services:
     volumes:
       - ./config/:/opt/indy-metadata/
 
-  infinispan:
-    image: infinispan/server:11.0.9.Final
-    ports:
-      - "11222:11222"
-    environment:
-      USER: "testuser"
-      PASS: "testpassword"
-
   zookeeper:
     image: strimzi/kafka:0.19.0-kafka-2.5.0
     command: [
