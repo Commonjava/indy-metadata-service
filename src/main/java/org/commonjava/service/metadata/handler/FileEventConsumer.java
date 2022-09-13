@@ -3,7 +3,7 @@ package org.commonjava.service.metadata.handler;
 import org.commonjava.event.file.FileEvent;
 import org.commonjava.event.file.FileEventType;
 import org.commonjava.service.metadata.cache.MetadataCacheManager;
-import org.commonjava.service.metadata.client.pathmapped.PathmappedService;
+import org.commonjava.service.metadata.client.storage.StorageService;
 import org.commonjava.service.metadata.client.repository.ArtifactStore;
 import org.commonjava.service.metadata.client.repository.RepositoryService;
 import org.commonjava.service.metadata.client.repository.StoreListingDTO;
@@ -27,7 +27,7 @@ public class FileEventConsumer
 
     @Inject
     @RestClient
-    PathmappedService pathmappedService;
+    StorageService storageService;
 
     @Inject
     @RestClient
@@ -116,7 +116,7 @@ public class FileEventConsumer
     {
         try
         {
-            pathmappedService.delete( key.getPackageType(), key.getType().name(), key.getName(), path );
+            storageService.delete( key.toString(), path );
             return true;
         }
         catch ( Exception e )
