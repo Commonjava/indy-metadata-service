@@ -34,6 +34,8 @@
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.version>2.3.0.Final</quarkus.platform.version>
         <quarkus-plugin.version>2.3.0.Final</quarkus-plugin.version>
+        <httpcoreVersion>4.4.9</httpcoreVersion>
+        <httpclientVersion>4.5.13</httpclientVersion>
     </properties>
 
     <dependencyManagement>
@@ -104,6 +106,17 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client-jackson</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclientVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpcoreVersion}</version>
         </dependency>
 
         <dependency>
@@ -188,6 +201,11 @@
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-in-memory</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.fault-tolerance</groupId>
+            <artifactId>microprofile-fault-tolerance-api</artifactId>
+            <version>2.1.1</version>
         </dependency>
 
     </dependencies>
