@@ -1,12 +1,13 @@
 package org.commonjava.service.metadata.handler;
 
+import org.apache.http.HttpStatus;
 import org.commonjava.event.file.FileEvent;
 import org.commonjava.event.file.FileEventType;
 import org.commonjava.service.metadata.cache.MetadataCacheManager;
-import org.commonjava.service.metadata.client.storage.StorageService;
 import org.commonjava.service.metadata.client.repository.ArtifactStore;
 import org.commonjava.service.metadata.client.repository.RepositoryService;
 import org.commonjava.service.metadata.client.repository.StoreListingDTO;
+import org.commonjava.service.metadata.client.storage.StorageService;
 import org.commonjava.service.metadata.model.StoreKey;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import static org.commonjava.service.metadata.handler.MetadataUtil.getMetadataPath;
 import static org.commonjava.service.metadata.model.StoreType.hosted;
@@ -71,8 +74,8 @@ public class FileEventConsumer
                         logger.info( "Metadata file {} in store {} cleared.", clearPath, key );
                     }
 
-                    StoreListingDTO<ArtifactStore> listingDTO = repositoryService.getGroupsAffectedBy( key.toString() );
-                    if ( listingDTO.items != null )
+                    StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy( key.toString() );
+                    if ( listingDTO != null && listingDTO.items != null )
                     {
                         for ( final ArtifactStore group : listingDTO.items )
                         {
@@ -92,6 +95,34 @@ public class FileEventConsumer
             }
 
         }
+
+    }
+
+    private StoreListingDTO<ArtifactStore> getGroupsAffectdBy( String key )
+    {
+        Response response;
+
+        try
+        {
+            response = repositoryService.getGroupsAffectedBy( key );
+        }
+        catch ( WebApplicationException e )
+        {
+            if (e.getResponse().getStatus() == HttpStatus.SC_NOT_FOUND )
+            {
+                return null;
+            }
+            else
+            {
+                throw e;
+            }
+        }
+        if ( response != null && response.getStatus() == HttpStatus.SC_OK )
+        {
+            return response.readEntity(StoreListingDTO.class);
+        }
+
+        return null;
 
     }
 
