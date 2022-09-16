@@ -10,6 +10,8 @@ import org.commonjava.service.metadata.client.repository.StoreListingDTO;
 import org.commonjava.service.metadata.client.storage.StorageService;
 import org.commonjava.service.metadata.model.StoreKey;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import org.eclipse.microprofile.reactive.messaging.Metadata;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.concurrent.CompletionStage;
 
 import static org.commonjava.service.metadata.handler.MetadataUtil.getMetadataPath;
 import static org.commonjava.service.metadata.model.StoreType.hosted;
@@ -44,7 +47,12 @@ public class FileEventConsumer
      * when a version (pom) is uploaded or removed.
      */
     @Incoming("file-event-in")
-    public void receive( FileEvent event ) {
+    public CompletionStage<Void> receive( Message<FileEvent> message ) {
+
+        // TODO handle the metadata
+        Metadata tracingMetadata = message.getMetadata();
+
+        FileEvent event = message.getPayload();
 
         logger.info("Got an event: {} #{}", event.getEventType().name(), event.getSessionId());
 
@@ -55,7 +63,7 @@ public class FileEventConsumer
 
             if ( !path.endsWith( ".pom" ) )
             {
-                return;
+                return message.ack();
             }
 
             final String keyStr = event.getStoreKey();
@@ -70,22 +78,20 @@ public class FileEventConsumer
                 {
                     if ( doClear( key, clearPath ) )
                     {
-                        cacheManager.remove( key, clearPath );
                         logger.info( "Metadata file {} in store {} cleared.", clearPath, key );
-                    }
 
-                    StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy( key.toString() );
-                    if ( listingDTO != null && listingDTO.items != null )
-                    {
-                        for ( final ArtifactStore group : listingDTO.items )
+                        StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy( key.toString() );
+                        if ( listingDTO != null && listingDTO.items != null )
                         {
-                            if ( doClear( group.key, clearPath ) )
+                            for ( final ArtifactStore group : listingDTO.items )
                             {
-                                cacheManager.remove( group.key, clearPath );
-                                logger.info( "Metadata file {} in store {} cleared.", clearPath, group.key );
+                                if ( doClear( group.key, clearPath ) )
+                                {
+                                    logger.info( "Metadata file {} in store {} cleared.", clearPath, group.key );
+                                }
                             }
+                            logger.info( "Clearing metadata file {} for {} groups affected by {}", clearPath, listingDTO.items.size(), key );
                         }
-                        logger.info( "Clearing metadata file {} for {} groups affected by {}", clearPath, listingDTO.items.size(), key );
                     }
                 }
             }
@@ -95,7 +101,7 @@ public class FileEventConsumer
             }
 
         }
-
+        return message.ack();
     }
 
     private StoreListingDTO<ArtifactStore> getGroupsAffectdBy( String key )
@@ -147,6 +153,18 @@ public class FileEventConsumer
     {
         try
         {
+            ArtifactStore store = getStore( key );
+
+            if ( store == null )
+            {
+                throw new Exception(String.format("The store doesn't exist, key: %s", key));
+            }
+
+            if ( store.readonly )
+            {
+                throw new Exception(String.format("The store %s is readonly. If you want to store any content to this store, please modify it to non-readonly",
+                        key));
+            }
             storageService.delete( key.toString(), path );
             return true;
         }
@@ -155,6 +173,40 @@ public class FileEventConsumer
             logger.warn( "Deletion failed for metadata clear, path: {}, reason: {}", path, e.getMessage() );
         }
         return false;
+    }
+
+    public boolean isReadonly( final ArtifactStore store )
+    {
+        return store != null && store.key.getType() == hosted && store.readonly;
+    }
+
+    private ArtifactStore getStore( StoreKey key )
+    {
+
+        Response response;
+
+        try
+        {
+            response = repositoryService.getStore(key.getPackageType(), key.getType().name(), key.getName());
+        }
+        catch ( WebApplicationException e )
+        {
+            if (e.getResponse().getStatus() == HttpStatus.SC_NOT_FOUND )
+            {
+                return null;
+            }
+            else
+            {
+                throw e;
+            }
+        }
+        if ( response != null && response.getStatus() == HttpStatus.SC_OK )
+        {
+            return response.readEntity(ArtifactStore.class);
+        }
+
+        return null;
+
     }
 
 }
