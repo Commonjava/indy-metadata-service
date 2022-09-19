@@ -1,9 +1,11 @@
 package org.commonjava.service.metadata.controller;
 
 import org.commonjava.service.metadata.cache.MetadataCacheManager;
+import org.commonjava.service.metadata.handler.MetadataHandler;
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.MetadataKey;
 import org.commonjava.service.metadata.model.StoreKey;
+import org.commonjava.service.metadata.model.StoreType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,9 @@ public class MetadataController
     @Inject
     MetadataCacheManager cacheManager;
 
+    @Inject
+    MetadataHandler metadataHandler;
+
     public MetadataInfo getMetadataInfo( String packageType, String type, String name, String path )
     {
 
@@ -34,5 +39,10 @@ public class MetadataController
 
         String storeKeyStr = packageType + ":" + type + ":" + name;
         return cacheManager.getAllPaths( StoreKey.fromString( storeKeyStr ) );
+    }
+
+    public boolean doDelete(String packageType, String type, String name, String path)
+    {
+        return metadataHandler.doDelete( new StoreKey(packageType, StoreType.get(type), name), path );
     }
 }

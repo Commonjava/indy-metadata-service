@@ -5,6 +5,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 @Path("/api/storage")
 @RegisterRestClient(configKey="storage-service-api")
@@ -12,6 +13,6 @@ public interface StorageService
 {
     @DELETE
     @Path("/content/{filesystem}/{path: (.*)}")
-    void delete(final @PathParam( "filesystem" ) String filesytem, final @PathParam( "path" ) String path);
+    Response delete(final @PathParam( "filesystem" ) String filesytem, final @PathParam( "path" ) String path);
 
 }
