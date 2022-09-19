@@ -7,4 +7,6 @@ import org.commonjava.service.metadata.model.StoreKey;
 public class ArtifactStore
 {
     public StoreKey key;
+
+    public Boolean readonly;
 }
