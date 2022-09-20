@@ -1,15 +1,13 @@
 package org.commonjava.service.metadata.jaxrs;
 
+import org.apache.http.HttpStatus;
 import org.commonjava.service.metadata.controller.MetadataController;
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import java.util.Set;
@@ -39,6 +37,20 @@ public class MetadataResource
     {
         MetadataInfo info = controller.getMetadataInfo( packageType, type, name, path );
         return responseHelper.formatOkResponseWithJsonEntity( info );
+    }
+
+    @DELETE
+    @Path( "/{packageType}/{type: (hosted|group|remote)}/{name}/{path: (.*)}" )
+    @Produces( APPLICATION_JSON )
+    public Response doDelete(
+            final @Parameter( in = PATH, required = true ) @PathParam( "packageType" ) String packageType,
+            final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group",
+                    "remote" } ), required = true ) @PathParam( "type" ) String type,
+            final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name,
+            @PathParam( "path" ) String path )
+    {
+        boolean deleted = controller.doDelete( packageType, type, name, path );
+        return deleted ? Response.status(HttpStatus.SC_NO_CONTENT).build() : Response.status(HttpStatus.SC_BAD_REQUEST).build();
     }
 
     @GET
