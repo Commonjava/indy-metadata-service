@@ -1,8 +1,6 @@
 package org.commonjava.service.metadata.handler;
 
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.StatusCode;
-import io.opentelemetry.context.Scope;
 import org.apache.http.HttpStatus;
 import org.commonjava.service.metadata.client.repository.ArtifactStore;
 import org.commonjava.service.metadata.client.repository.RepositoryService;
@@ -37,18 +35,15 @@ public class MetadataHandler
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    public boolean doDelete( StoreKey key, String path )
+    @Traced
+    public boolean doDelete(StoreKey key, String path )
     {
 
-        Scope scope = null;
-        Span span = otel.newClientSpan("Metadata Handler", "metadata_cleanup");
+        Span.current().setAttribute("store.key", key.toString());
+        Span.current().setAttribute("path.info", path);
 
         try
         {
-            if ( span != null )
-            {
-                scope = span.makeCurrent();
-            }
             if ( hosted == key.getType() )
             {
                 if ( doClear( key, path ) )
@@ -65,7 +60,7 @@ public class MetadataHandler
                                 logger.info( "Metadata file {} in store {} cleared.", path, group.key );
                             }
                         }
-                        addAttributeToSpan( span, "GroupsAffectdBy.size", String.valueOf( listingDTO.items.size()) );
+                        Span.current().setAttribute( "GroupsAffectdBy.size", String.valueOf( listingDTO.items.size()) );
                         logger.info( "Clearing metadata file {} for {} groups affected by {}", path, listingDTO.items.size(), key );
                     }
                 }
@@ -73,50 +68,34 @@ public class MetadataHandler
         }
         catch ( final Exception e )
         {
-            endSpanWithStatus( span, scope, StatusCode.ERROR );
             logger.warn( "Failed to clear metadata file: {}", path, e );
-        }
-        finally
-        {
-            scope.close();
-            span.end();
         }
         return true;
 
     }
 
-    private StoreListingDTO<ArtifactStore> getGroupsAffectdBy( String key )
+    @Traced
+    public StoreListingDTO<ArtifactStore> getGroupsAffectdBy( String key )
     {
         Response response;
-        Scope scope = null;
-
-        Span span = otel.newClientSpan("REST Client:getGroupsAffectdBy", "remote.call:repository.service");
 
         try
         {
-            if ( span != null )
-            {
-                scope = span.makeCurrent();
-            }
-            addAttributeToSpan( span, "store.key", key );
             response = repositoryService.getGroupsAffectedBy( key );
         }
         catch ( WebApplicationException e )
         {
             if (e.getResponse().getStatus() == HttpStatus.SC_NOT_FOUND )
             {
-                endSpanWithStatus( span, scope, StatusCode.UNSET );
                 return null;
             }
             else
             {
-                endSpanWithStatus( span, scope, StatusCode.ERROR );
                 throw e;
             }
         }
         if ( response != null && response.getStatus() == HttpStatus.SC_OK )
         {
-            endSpanWithStatus( span, scope, StatusCode.OK );
             return response.readEntity(StoreListingDTO.class);
         }
 
@@ -172,7 +151,7 @@ public class MetadataHandler
     {
         try
         {
-            return doDelete( key.toString(), path );
+            return deleteResource( key.toString(), path );
         }
         catch ( Exception e )
         {
@@ -181,38 +160,26 @@ public class MetadataHandler
         return false;
     }
 
-    private boolean doDelete(String key, String path)
+    @Traced
+    public boolean deleteResource( String key, String path )
     {
         Response response = null;
-        Scope scope = null;
-        Span span = otel.newClientSpan("REST Client:doDelete", "remote.call:storage.service");
 
         try
         {
-            if ( span != null )
-            {
-                scope = span.makeCurrent();
-            }
-            addAttributeToSpan( span, "store.key", key );
-            addAttributeToSpan( span, "path.info", path );
-
             response = storageService.delete(key, path);
         }
         catch ( WebApplicationException e )
         {
-            endSpanWithStatus( span, scope, StatusCode.ERROR );
             throw e;
         }
         if ( Response.Status.fromStatusCode( response.getStatus() ).getFamily()
                 != Response.Status.Family.SUCCESSFUL  )
         {
-
-            endSpanWithStatus( span, scope, StatusCode.ERROR );
             return false;
         }
         else
         {
-            endSpanWithStatus( span, scope, StatusCode.OK );
             return true;
         }
     }
@@ -220,62 +187,34 @@ public class MetadataHandler
     {
         return store != null && store.key.getType() == hosted && store.readonly;
     }
-
-    private ArtifactStore getStore( StoreKey key )
+    @Traced
+    public ArtifactStore getStore( StoreKey key )
     {
 
         Response response;
-        Scope scope = null;
-
-        Span span = otel.newClientSpan("REST Client:getStore", "remote.call:repository.service");
 
         try
         {
-            if ( span != null )
-            {
-                scope = span.makeCurrent();
-            }
-            addAttributeToSpan( span, "store.key", key.toString() );
             response = repositoryService.getStore(key.getPackageType(), key.getType().name(), key.getName());
         }
         catch ( WebApplicationException e )
         {
             if (e.getResponse().getStatus() == HttpStatus.SC_NOT_FOUND )
             {
-                endSpanWithStatus( span, scope, StatusCode.UNSET );
                 return null;
+
             }
             else
             {
-                endSpanWithStatus( span, scope, StatusCode.ERROR );
                 throw e;
             }
         }
         if ( response != null && response.getStatus() == HttpStatus.SC_OK )
         {
-            endSpanWithStatus( span, scope, StatusCode.OK );
             return response.readEntity(ArtifactStore.class);
         }
         return null;
 
-    }
-
-    private void addAttributeToSpan(Span span, String key, String value)
-    {
-        if ( span != null )
-        {
-            span.setAttribute( key, value );
-        }
-    }
-
-    private void endSpanWithStatus(Span span, Scope scope, StatusCode code)
-    {
-        if ( span != null )
-        {
-            span.setStatus( code );
-            scope.close();
-            span.end();
-        }
     }
 
 }
