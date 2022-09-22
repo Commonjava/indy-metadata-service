@@ -44,6 +44,7 @@ public class TracingInterceptor
             if ( span != null )
             {
                 span.setStatus( StatusCode.ERROR );
+                span.recordException( e );
             }
             throw e;
         }
