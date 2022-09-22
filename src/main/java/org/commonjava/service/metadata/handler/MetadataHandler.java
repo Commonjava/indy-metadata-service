@@ -44,24 +44,23 @@ public class MetadataHandler
 
         try
         {
-            if ( hosted == key.getType() )
+            if ( doClear( key, path ) )
             {
-                if ( doClear( key, path ) )
+                logger.info( "Metadata file {} in store {} cleared.", path, key );
+                if ( hosted == key.getType() )
                 {
-                    logger.info( "Metadata file {} in store {} cleared.", path, key );
-
-                    StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy( key.toString() );
-                    if ( listingDTO != null && listingDTO.items != null )
+                    StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy(key.toString());
+                    if (listingDTO != null && listingDTO.items != null)
                     {
-                        for ( final ArtifactStore group : listingDTO.items )
+                        for (final ArtifactStore group : listingDTO.items)
                         {
                             if ( doClear( group.key, path ) )
                             {
                                 logger.info( "Metadata file {} in store {} cleared.", path, group.key );
                             }
                         }
-                        Span.current().setAttribute( "GroupsAffectdBy.size", String.valueOf( listingDTO.items.size()) );
-                        logger.info( "Clearing metadata file {} for {} groups affected by {}", path, listingDTO.items.size(), key );
+                        Span.current().setAttribute( "GroupsAffectdBy.size", listingDTO.items.size() );
+                        logger.info("Clearing metadata file {} for {} groups affected by {}", path, listingDTO.items.size(), key);
                     }
                 }
             }
@@ -125,7 +124,7 @@ public class MetadataHandler
                 }
             }
 
-            final boolean isMetadata = path.endsWith(MetadataUtil.METADATA_NAME);
+            final boolean isMetadata = path.endsWith(MetadataUtil.METADATA_NAME) || path.endsWith(MetadataUtil.NPM_METADATA_NAME);
 
             logger.info("Attempting to delete: {} from {}", path, key);
 

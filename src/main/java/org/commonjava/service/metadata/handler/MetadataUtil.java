@@ -8,6 +8,8 @@ public class MetadataUtil
 
     public static final String METADATA_NAME = "maven-metadata.xml";
 
+    public static final String NPM_METADATA_NAME = "package.json";
+
     public static final String MERGEINFO_SUFFIX = ".info";
 
     public static final String SHA_SUFFIX = ".sha";
@@ -21,5 +23,11 @@ public class MetadataUtil
     {
         final String versionPath = normalize( parentPath( pomPath ) );
         return normalize( normalize( parentPath( versionPath ) ), METADATA_NAME );
+    }
+
+    public static String getPkgMetadataPath( String tarPath )
+    {
+        String pkgPath = normalize ( parentPath( normalize( parentPath( tarPath ) ) ));
+        return normalize( pkgPath, NPM_METADATA_NAME ) ;
     }
 }
