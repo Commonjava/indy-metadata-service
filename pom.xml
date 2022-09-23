@@ -34,6 +34,7 @@
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.version>2.3.0.Final</quarkus.platform.version>
         <quarkus-plugin.version>2.3.0.Final</quarkus-plugin.version>
+        <quarkus.package.type>uber-jar</quarkus.package.type>
         <httpcoreVersion>4.4.9</httpcoreVersion>
         <httpclientVersion>4.5.13</httpclientVersion>
     </properties>
@@ -206,6 +207,11 @@
             <groupId>org.eclipse.microprofile.fault-tolerance</groupId>
             <artifactId>microprofile-fault-tolerance-api</artifactId>
             <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.client</groupId>
+            <artifactId>wildfly-client-config</artifactId>
+            <version>1.0.1.Final</version>
         </dependency>
 
     </dependencies>
