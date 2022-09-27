@@ -3,6 +3,9 @@ package org.commonjava.service.metadata.jaxrs;
 import org.apache.http.HttpStatus;
 import org.commonjava.service.metadata.controller.MetadataController;
 import org.commonjava.service.metadata.model.MetadataInfo;
+import org.commonjava.service.metadata.model.SpecialPathDTO;
+import org.commonjava.service.metadata.model.SpecialPathInfo;
+import org.commonjava.service.metadata.model.SpecialPathSet;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
@@ -10,6 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -64,6 +68,30 @@ public class MetadataResource
     {
         Set<String> paths = controller.getAllPaths( packageType, type, name );
         return responseHelper.formatOkResponseWithJsonEntity( paths );
+    }
+
+    @GET
+    @Path("/special-paths/{packageType}")
+    @Produces( APPLICATION_JSON )
+    public  Response getAllSpecialPathSets(final @Parameter( in = PATH, required = true ) @PathParam( "packageType" ) String packageType)
+    {
+        SpecialPathDTO specialPathDTO = controller.getSpecialPathSets(packageType);
+        return responseHelper.formatOkResponseWithJsonEntity(specialPathDTO);
+    }
+
+    @GET
+    @Path("/special-path/{packageType}/{type: (hosted|group|remote)}/{name}/{path: (.*)}")
+    @Produces( APPLICATION_JSON )
+    public  Response getSpecialPathInfo(
+            final @Parameter( in = PATH, required = true ) @PathParam( "packageType" ) String packageType,
+            final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group",
+                    "remote" } ), required = true ) @PathParam( "type" ) String type,
+            final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name,
+            @PathParam( "path" ) String path
+    )
+    {
+        SpecialPathInfo pathInfo = controller.getSpecialPathInfo(packageType, type, name, path);
+        return responseHelper.formatOkResponseWithJsonEntity(pathInfo);
     }
 
 }
