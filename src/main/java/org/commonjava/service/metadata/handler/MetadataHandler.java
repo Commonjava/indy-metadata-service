@@ -30,9 +30,6 @@ public class MetadataHandler
     @RestClient
     StorageService storageService;
 
-    @Inject
-    OtelAdapter otel;
-
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Traced
@@ -114,12 +111,12 @@ public class MetadataHandler
 
                 if ( store == null )
                 {
-                    throw new Exception( String.format( "The store doesn't exist, key: %s", key ) );
+                    throw new IndyException( String.format( "The store doesn't exist, key: %s", key ) );
                 }
 
                 if ( isReadonly( store ) )
                 {
-                    throw new Exception( String.format( "The store %s is readonly. If you want to store any content to this store, please modify it to non-readonly",
+                    throw new IndyException( String.format( "The store %s is readonly. If you want to store any content to this store, please modify it to non-readonly",
                             key ) );
                 }
             }
@@ -160,8 +157,7 @@ public class MetadataHandler
     }
 
     @Traced
-    public boolean deleteResource( String key, String path )
-    {
+    public boolean deleteResource( String key, String path ) throws IndyException {
         Response response = null;
 
         try
@@ -170,12 +166,12 @@ public class MetadataHandler
         }
         catch ( WebApplicationException e )
         {
-            throw e;
+            throw new IndyException("Delete resource error.", e);
         }
         if ( Response.Status.fromStatusCode( response.getStatus() ).getFamily()
                 != Response.Status.Family.SUCCESSFUL  )
         {
-            return false;
+            throw new IndyException("Delete resource error with status code {}", response.getStatus());
         }
         else
         {
