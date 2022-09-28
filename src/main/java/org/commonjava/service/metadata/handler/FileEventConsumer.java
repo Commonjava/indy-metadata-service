@@ -73,7 +73,10 @@ public class FileEventConsumer
                 logger.info( "Tar file {} {}, will clean matched metadata file {}, store: {}", path, event.getEventType(), clearPath, keyStr );
             }
 
-            metadataHandler.doDelete(key, clearPath);
+            if ( hosted == key.getType() )
+            {
+                metadataHandler.doDelete(key, clearPath);
+            }
 
         }
         return message.ack();
