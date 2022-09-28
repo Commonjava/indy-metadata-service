@@ -44,22 +44,21 @@ public class MetadataHandler
             if ( doClear( key, path ) )
             {
                 logger.info( "Metadata file {} in store {} cleared.", path, key );
-                if ( hosted == key.getType() )
+
+                StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy(key.toString());
+                if (listingDTO != null && listingDTO.items != null)
                 {
-                    StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy(key.toString());
-                    if (listingDTO != null && listingDTO.items != null)
+                    for (final ArtifactStore group : listingDTO.items)
                     {
-                        for (final ArtifactStore group : listingDTO.items)
+                        if ( doClear( group.key, path ) )
                         {
-                            if ( doClear( group.key, path ) )
-                            {
-                                logger.info( "Metadata file {} in store {} cleared.", path, group.key );
-                            }
+                            logger.info( "Metadata file {} in store {} cleared.", path, group.key );
                         }
-                        Span.current().setAttribute( "GroupsAffectdBy.size", listingDTO.items.size() );
-                        logger.info("Clearing metadata file {} for {} groups affected by {}", path, listingDTO.items.size(), key);
                     }
+                    Span.current().setAttribute( "GroupsAffectdBy.size", listingDTO.items.size() );
+                    logger.info("Clearing metadata file {} for {} groups affected by {}", path, listingDTO.items.size(), key);
                 }
+
             }
         }
         catch ( final Exception e )
