@@ -64,6 +64,10 @@ storage-service-api/mp-rest/scope: javax.inject.Singleton
 repo-service-api/mp-rest/url: http://localhost
 repo-service-api/mp-rest/scope: javax.inject.Singleton
 
+indy_security:
+    enabled: true
+    security_bindings_yaml: ""
+
 "%dev":
     quarkus:
         kubernetes-config:
@@ -105,3 +109,7 @@ repo-service-api/mp-rest/scope: javax.inject.Singleton
 
     storage-api/mp-rest/url: http://localhost
     storage-api/mp-rest/scope: javax.inject.Singleton
+
+    indy_security:
+        enabled: true
+        security_bindings_yaml: ""

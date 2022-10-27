@@ -1,0 +1,5 @@
+constraints:
+    - role: power-user
+      urlPattern: "/api/metadata/.*"
+      methods:
+        - DELETE
