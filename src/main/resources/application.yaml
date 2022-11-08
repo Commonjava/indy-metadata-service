@@ -103,7 +103,7 @@ indy_security:
                         deserializer: org.commonjava.event.file.FileEventDeserializer
                 promote-event-in:
                     connector: smallrye-kafka
-                    topic: post-promote-event
+                    topic: promote-complete
                     value:
                         deserializer: org.commonjava.service.metadata.handler.PathsPromoteCompleteEventDeserializer
 
