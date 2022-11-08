@@ -101,6 +101,11 @@ indy_security:
                     topic: file-event
                     value:
                         deserializer: org.commonjava.event.file.FileEventDeserializer
+                promote-event-in:
+                    connector: smallrye-kafka
+                    topic: post-promote-event
+                    value:
+                        deserializer: org.commonjava.service.metadata.handler.PathsPromoteCompleteEventDeserializer
 
     ispn:
         hotrod:
