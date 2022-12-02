@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.commonjava</groupId>
         <artifactId>service-parent</artifactId>
-        <version>1</version>
+        <version>2</version>
     </parent>
 
     <groupId>org.commonjava.indy.service</groupId>
@@ -30,10 +30,6 @@
         <indy-event.version>1.0</indy-event.version>
         <infinispan.version>11.0.8.Final</infinispan.version>
         <protostreamVersion>4.3.5.Final</protostreamVersion>
-        <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
-        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus.platform.version>2.3.0.Final</quarkus.platform.version>
-        <quarkus-plugin.version>2.3.0.Final</quarkus-plugin.version>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <httpcoreVersion>4.4.9</httpcoreVersion>
         <httpclientVersion>4.5.13</httpclientVersion>
@@ -45,13 +41,6 @@
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-bom</artifactId>
                 <version>${infinispan.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>${quarkus.platform.artifact-id}</artifactId>
-                <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -77,7 +66,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-vertx-web</artifactId>
+            <artifactId>quarkus-reactive-routes</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -242,7 +231,6 @@
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
