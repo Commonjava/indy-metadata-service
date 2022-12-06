@@ -43,6 +43,12 @@ quarkus:
                 logging:
                     loglevel: debug
 
+    oidc-client:
+        auth-server-url: "keycloak_server_url/realms/pncredhat"
+        client-id: your_client_id
+        credentials:
+            secret: your_secret
+
     swagger-ui:
         always-include: true
 

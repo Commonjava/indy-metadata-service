@@ -34,6 +34,8 @@ public class PromoteEventConsumer
 
         PathsPromoteCompleteEvent event = message.getPayload();
 
+        logger.info( "Got an event: {}", event );
+
         final String keyStr = event.getTargetStore();
         final StoreKey key =  StoreKey.fromString( keyStr );
 
