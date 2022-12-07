@@ -1,7 +1,7 @@
 # Quarkus will choose application.yaml over application.properties.
 quarkus:
     http:
-        port: 8080
+        port: 8081
         read-timeout: 30m
         limits:
           max-body-size: 500M
@@ -48,6 +48,20 @@ quarkus:
         client-id: your_client_id
         credentials:
             secret: your_secret
+
+    keycloak:
+        policy-enforcer:
+            enable: false
+    oidc:
+        enabled: true
+        auth-server-url: "https://localhost:8180/auth/realms/quarkus"
+        client-id: your_client_id
+        credentials:
+            secret: your_secret
+        tls:
+            verification: none
+        token:
+            issuer: any
 
     swagger-ui:
         always-include: true
