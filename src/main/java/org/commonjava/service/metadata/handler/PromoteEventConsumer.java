@@ -65,6 +65,11 @@ public class PromoteEventConsumer
 
                 logger.info( "Tar file {}, will clean matched metadata file {}, store: {}", path, clearPath, keyStr );
             }
+            else
+            {
+                logger.info( "Ignore the file {}", path );
+                return;
+            }
 
             if ( hosted == key.getType() )
             {
