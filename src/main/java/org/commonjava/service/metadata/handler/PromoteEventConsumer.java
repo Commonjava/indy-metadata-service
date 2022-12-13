@@ -1,6 +1,8 @@
 package org.commonjava.service.metadata.handler;
 
 import org.commonjava.event.promote.PathsPromoteCompleteEvent;
+import org.commonjava.service.metadata.client.repository.ArtifactStore;
+import org.commonjava.service.metadata.client.repository.StoreListingDTO;
 import org.commonjava.service.metadata.model.StoreKey;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -39,6 +41,8 @@ public class PromoteEventConsumer
         final String keyStr = event.getTargetStore();
         final StoreKey key =  StoreKey.fromString( keyStr );
 
+        StoreListingDTO<ArtifactStore> groupsAffectedBy = metadataHandler.getGroupsAffectdBy(key.toString());
+
         event.getCompletedPaths().forEach( path ->
         {
             if ( hosted != key.getType() )
@@ -64,7 +68,7 @@ public class PromoteEventConsumer
 
             if ( hosted == key.getType() )
             {
-                metadataHandler.doDelete(key, clearPath);
+                metadataHandler.doDelete(key, groupsAffectedBy, clearPath);
             }
         } );
 

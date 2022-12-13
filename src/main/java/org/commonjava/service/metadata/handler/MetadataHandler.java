@@ -35,35 +35,39 @@ public class MetadataHandler
     @Traced
     public boolean doDelete(StoreKey key, String path )
     {
+        StoreListingDTO<ArtifactStore> groupsAffectedBy = getGroupsAffectdBy(key.toString());
+        return doDelete(key, groupsAffectedBy, path );
+    }
 
+    @Traced
+    public boolean doDelete(StoreKey key, StoreListingDTO<ArtifactStore> groupsAffectedBy, String path )
+    {
         Span.current().setAttribute("store.key", key.toString());
         Span.current().setAttribute("path.info", path);
-
         try
         {
             if ( doClear( key, path ) )
             {
                 logger.info( "Metadata file {} in store {} cleared.", path, key );
 
-                StoreListingDTO<ArtifactStore> listingDTO = getGroupsAffectdBy(key.toString());
-                if (listingDTO != null && listingDTO.items != null)
+                if (groupsAffectedBy != null && groupsAffectedBy.items != null)
                 {
-                    for (final ArtifactStore group : listingDTO.items)
+                    for (final ArtifactStore group : groupsAffectedBy.items)
                     {
                         if ( doClear( group.key, path ) )
                         {
                             logger.info( "Metadata file {} in store {} cleared.", path, group.key );
                         }
                     }
-                    Span.current().setAttribute( "GroupsAffectdBy.size", listingDTO.items.size() );
-                    logger.info("Clearing metadata file {} for {} groups affected by {}", path, listingDTO.items.size(), key);
+                    Span.current().setAttribute( "GroupsAffectedBy.size", groupsAffectedBy.items.size() );
+                    logger.info("Clearing metadata file {} for {} groups affected by {}", path, groupsAffectedBy.items.size(), key);
                 }
 
             }
         }
         catch ( final Exception e )
         {
-            logger.warn( "Failed to clear metadata file: {}", path, e );
+            logger.warn( "Failed to clear metadata file: {}, error: {}", path, e );
         }
         return true;
 
