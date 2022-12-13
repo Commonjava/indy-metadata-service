@@ -1,6 +1,10 @@
 package org.commonjava.service.metadata.client.util;
 
 import io.quarkus.oidc.client.OidcClient;
+import io.quarkus.oidc.client.Tokens;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -14,13 +18,32 @@ import javax.ws.rs.ext.Provider;
 @Priority(Priorities.AUTHENTICATION)
 public class CustomClientRequestFilter implements ClientRequestFilter
 {
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
     OidcClient client;
 
+    private volatile Tokens tokens;
+
+    @ConfigProperty(name = "indy_security.enabled")
+    boolean securityEnabled;
+
     @Override
     public void filter( ClientRequestContext requestContext )
     {
-        requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getTokens().await().indefinitely().getAccessToken());
+        if ( securityEnabled )
+        {
+            if ( tokens == null )
+            {
+                logger.debug("Security enabled, get oidc Tokens");
+                tokens = client.getTokens().await().indefinitely();
+            }
+            else if (tokens.isAccessTokenExpired())
+            {
+                logger.debug("Refresh oidc Tokens");
+                tokens = client.refreshTokens(tokens.getRefreshToken()).await().indefinitely();
+            }
+            requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getAccessToken());
+        }
     }
 }
