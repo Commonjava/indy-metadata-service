@@ -40,7 +40,7 @@ public class PromoteEventConsumer
 
         logger.info( "Got an event: {}", event );
 
-        final String keyStr = event.getTargetStore();
+        final String keyStr = event.isPurgeSource() ? event.getSourceStore() : event.getTargetStore();
         final StoreKey key =  StoreKey.fromString( keyStr );
 
         if ( hosted != key.getType() )
