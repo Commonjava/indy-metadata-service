@@ -27,7 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <indy-event.version>1.0</indy-event.version>
+        <indy-event.version>1.1-SNAPSHOT</indy-event.version>
         <infinispan.version>11.0.8.Final</infinispan.version>
         <protostreamVersion>4.3.5.Final</protostreamVersion>
         <quarkus.package.type>uber-jar</quarkus.package.type>

@@ -2,6 +2,8 @@ package org.commonjava.service.metadata.handler;
 
 import io.opentelemetry.api.trace.Span;
 import org.apache.http.HttpStatus;
+import org.commonjava.event.storage.BatchCleanupRequest;
+import org.commonjava.event.storage.BatchCleanupResult;
 import org.commonjava.service.metadata.client.repository.ArtifactStore;
 import org.commonjava.service.metadata.client.repository.RepositoryService;
 import org.commonjava.service.metadata.client.repository.StoreListingDTO;
@@ -15,6 +17,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
+import java.util.Set;
 
 import static org.commonjava.service.metadata.model.StoreType.hosted;
 
@@ -215,4 +219,38 @@ public class MetadataHandler
 
     }
 
+    public void doBatchDelete( Set<String> clearPaths, Set<String> filesystems )
+    {
+        Response response = null;
+
+        try
+        {
+            BatchCleanupRequest request = new BatchCleanupRequest();
+            request.setFilesystems(filesystems);
+            request.setPaths(clearPaths);
+
+            logger.info( "Batch delete request, {}", request );
+            response = storageService.cleanup( request );
+        }
+        catch ( WebApplicationException e )
+        {
+            logger.warn( "Delete resource error: {}", e );
+        }
+
+        if ( response != null && response.getStatus() == HttpStatus.SC_OK )
+        {
+            if ( Response.Status.fromStatusCode( response.getStatus() ).getFamily()
+                    != Response.Status.Family.SUCCESSFUL  )
+            {
+                logger.warn( "Delete resource error with status code {}", response.getStatus() );
+            }
+
+            if ( response.getStatus() == HttpStatus.SC_OK )
+            {
+                BatchCleanupResult result = response.readEntity(BatchCleanupResult.class);
+                logger.info( "Batch delete result, {}", result );
+            }
+        }
+
+    }
 }

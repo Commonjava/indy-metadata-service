@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 import static org.commonjava.service.metadata.handler.MetadataUtil.getMetadataPath;
@@ -41,14 +43,24 @@ public class PromoteEventConsumer
         final String keyStr = event.getTargetStore();
         final StoreKey key =  StoreKey.fromString( keyStr );
 
-        StoreListingDTO<ArtifactStore> groupsAffectedBy = metadataHandler.getGroupsAffectdBy(key.toString());
+        if ( hosted != key.getType() )
+        {
+            return message.ack();
+        }
+
+        Set<String> clearPaths = new HashSet<>();
+        Set<String> filesystems = new HashSet<>();
+
+        addRepoAndAffectedGroups( key, filesystems );
+
+        if ( event.isPurgeSource() )
+        {
+            String sourceKey = event.getSourceStore();
+            addRepoAndAffectedGroups( StoreKey.fromString(sourceKey), filesystems );
+        }
 
         event.getCompletedPaths().forEach( path ->
         {
-            if ( hosted != key.getType() )
-            {
-                return;
-            }
 
             String clearPath = null;
 
@@ -71,14 +83,21 @@ public class PromoteEventConsumer
                 return;
             }
 
-            if ( hosted == key.getType() )
-            {
-                metadataHandler.doDelete(key, groupsAffectedBy, clearPath);
-            }
+            clearPaths.add( clearPath );
+
         } );
+
+        metadataHandler.doBatchDelete( clearPaths, filesystems );
 
         return message.ack();
 
+    }
+
+    private void addRepoAndAffectedGroups( StoreKey storeKey, Set<String> filesystems )
+    {
+        filesystems.add( storeKey.toString() );
+        StoreListingDTO<ArtifactStore> groupsAffectedBySource = metadataHandler.getGroupsAffectdBy( storeKey.toString() );
+        groupsAffectedBySource.items.forEach( item->filesystems.add( item.key.toString() ) );
     }
 
 }
