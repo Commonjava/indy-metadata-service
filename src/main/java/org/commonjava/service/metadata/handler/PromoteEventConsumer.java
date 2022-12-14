@@ -40,7 +40,7 @@ public class PromoteEventConsumer
 
         logger.info( "Got an event: {}", event );
 
-        final String keyStr = event.isPurgeSource() ? event.getSourceStore() : event.getTargetStore();
+        final String keyStr = event.getTargetStore();
         final StoreKey key =  StoreKey.fromString( keyStr );
 
         if ( hosted != key.getType() )
@@ -48,12 +48,16 @@ public class PromoteEventConsumer
             return message.ack();
         }
 
-        StoreListingDTO<ArtifactStore> groupsAffectedBy = metadataHandler.getGroupsAffectdBy(key.toString());
         Set<String> clearPaths = new HashSet<>();
         Set<String> filesystems = new HashSet<>();
 
-        filesystems.add( key.toString() );
-        groupsAffectedBy.items.forEach( item->filesystems.add( item.key.toString() ) );
+        addRepoAndAffectedGroups( key, filesystems );
+
+        if ( event.isPurgeSource() )
+        {
+            String sourceKey = event.getSourceStore();
+            addRepoAndAffectedGroups( StoreKey.fromString(sourceKey), filesystems );
+        }
 
         event.getCompletedPaths().forEach( path ->
         {
@@ -87,6 +91,13 @@ public class PromoteEventConsumer
 
         return message.ack();
 
+    }
+
+    private void addRepoAndAffectedGroups( StoreKey storeKey, Set<String> filesystems )
+    {
+        filesystems.add( storeKey.toString() );
+        StoreListingDTO<ArtifactStore> groupsAffectedBySource = metadataHandler.getGroupsAffectdBy( storeKey.toString() );
+        groupsAffectedBySource.items.forEach( item->filesystems.add( item.key.toString() ) );
     }
 
 }
