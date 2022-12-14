@@ -97,7 +97,13 @@ public class PromoteEventConsumer
     {
         filesystems.add( storeKey.toString() );
         StoreListingDTO<ArtifactStore> groupsAffectedBySource = metadataHandler.getGroupsAffectdBy( storeKey.toString() );
-        groupsAffectedBySource.items.forEach( item->filesystems.add( item.key.toString() ) );
+        if ( groupsAffectedBySource != null )
+        {
+            if (groupsAffectedBySource.items != null && !groupsAffectedBySource.items.isEmpty())
+            {
+                groupsAffectedBySource.items.forEach(item -> filesystems.add(item.key.toString()));
+            }
+        }
     }
 
 }
