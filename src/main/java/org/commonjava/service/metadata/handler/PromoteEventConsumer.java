@@ -59,38 +59,45 @@ public class PromoteEventConsumer
             addRepoAndAffectedGroups( StoreKey.fromString(sourceKey), filesystems );
         }
 
-        event.getCompletedPaths().forEach( path ->
-        {
-
-            String clearPath = null;
-
-            if ( path.endsWith( POM_EXTENSION ) )
-            {
-                clearPath = getMetadataPath( path );
-
-                logger.info( "Pom file {}, will clean matched metadata file {}, store: {}", path, clearPath, keyStr );
-
-            }
-            else if ( path.endsWith( PACKAGE_TARBALL_EXTENSION ) )
-            {
-                clearPath = getPkgMetadataPath( path );
-
-                logger.info( "Tar file {}, will clean matched metadata file {}, store: {}", path, clearPath, keyStr );
-            }
-            else
-            {
-                logger.info( "Ignore the file {}", path );
-                return;
-            }
-
-            clearPaths.add( clearPath );
-
-        } );
+        // include both completed and skipped paths, skipped paths can also affect the TOBE-cleaned metadata
+        addToClearPaths(clearPaths, event.getSkippedPaths());
+        addToClearPaths(clearPaths, event.getCompletedPaths());
 
         metadataHandler.doBatchDelete( clearPaths, filesystems );
-
         return message.ack();
+    }
 
+    private void addToClearPaths(Set<String> clearPaths, Set<String> paths) {
+        if ( paths != null )
+        {
+            paths.forEach( path -> {
+                String clearPath = getCleanPath(path);
+                if ( clearPath != null ) {
+                    clearPaths.add(clearPath);
+                }
+            } );
+        }
+    }
+
+    private String getCleanPath(String path)
+    {
+        String clearPath;
+        if ( path.endsWith( POM_EXTENSION ) )
+        {
+            clearPath = getMetadataPath( path );
+            logger.info( "Pom file {}, will clean matched metadata file {}", path, clearPath );
+        }
+        else if ( path.endsWith( PACKAGE_TARBALL_EXTENSION ) )
+        {
+            clearPath = getPkgMetadataPath( path );
+            logger.info( "Tar file {}, will clean matched metadata file {}", path, clearPath );
+        }
+        else
+        {
+            logger.info( "Ignore the file {}", path );
+            clearPath = null;
+        }
+        return clearPath;
     }
 
     private void addRepoAndAffectedGroups( StoreKey storeKey, Set<String> filesystems )
