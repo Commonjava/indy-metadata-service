@@ -1,5 +1,6 @@
 package org.commonjava.service.metadata.handler;
 
+import io.smallrye.common.annotation.Blocking;
 import org.commonjava.event.file.FileEvent;
 import org.commonjava.event.file.FileEventType;
 import org.commonjava.service.metadata.model.StoreKey;
@@ -32,6 +33,7 @@ public class FileEventConsumer
      * this observes the channel of {@link FileEvent} for a pom file, which means maven-metadata.xml will be cleared
      * when a version (pom) is uploaded or removed.
      */
+    @Blocking
     @Incoming("file-event-in")
     public CompletionStage<Void> receive( Message<FileEvent> message ) {
 

@@ -1,5 +1,6 @@
 package org.commonjava.service.metadata.handler;
 
+import io.smallrye.common.annotation.Blocking;
 import org.commonjava.event.promote.PathsPromoteCompleteEvent;
 import org.commonjava.service.metadata.client.repository.ArtifactStore;
 import org.commonjava.service.metadata.client.repository.StoreListingDTO;
@@ -32,6 +33,7 @@ public class PromoteEventConsumer
     @Inject
     MetadataHandler metadataHandler;
 
+    @Blocking
     @Incoming("promote-event-in")
     public CompletionStage<Void> receive( Message<PathsPromoteCompleteEvent> message )
     {
