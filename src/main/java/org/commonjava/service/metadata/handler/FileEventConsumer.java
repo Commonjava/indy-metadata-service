@@ -39,7 +39,7 @@ public class FileEventConsumer
 
         FileEvent event = message.getPayload();
 
-        logger.info("Got an event: {} {}:{}", event.getEventType().name(), event.getStoreKey(), event.getTargetPath());
+        logger.info("Got an event: {}", event);
 
         if ( event.getEventType().equals( FileEventType.STORAGE ) || event.getEventType()
                                                                           .equals( FileEventType.DELETE ) )
