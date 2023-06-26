@@ -77,7 +77,14 @@ public class FileEventConsumer
 
             if ( hosted == key.getType() )
             {
-                metadataHandler.doDelete(key, clearPath);
+                try
+                {
+                    metadataHandler.doDelete(key, clearPath);
+                }
+                catch ( Throwable e )
+                {
+                    logger.error( "Failed to handle the file event", e );
+                }
             }
 
         }

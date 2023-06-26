@@ -53,19 +53,25 @@ public class PromoteEventConsumer
         Set<String> clearPaths = new HashSet<>();
         Set<String> filesystems = new HashSet<>();
 
-        addRepoAndAffectedGroups( key, filesystems );
-
-        if ( event.isPurgeSource() )
+        try
         {
-            String sourceKey = event.getSourceStore();
-            addRepoAndAffectedGroups( StoreKey.fromString(sourceKey), filesystems );
+            addRepoAndAffectedGroups(key, filesystems);
+
+            if (event.isPurgeSource()) {
+                String sourceKey = event.getSourceStore();
+                addRepoAndAffectedGroups(StoreKey.fromString(sourceKey), filesystems);
+            }
+
+            // include both completed and skipped paths, skipped paths can also affect the TOBE-cleaned metadata
+            addToClearPaths(clearPaths, event.getSkippedPaths());
+            addToClearPaths(clearPaths, event.getCompletedPaths());
+
+            metadataHandler.doBatchDelete(clearPaths, filesystems);
         }
-
-        // include both completed and skipped paths, skipped paths can also affect the TOBE-cleaned metadata
-        addToClearPaths(clearPaths, event.getSkippedPaths());
-        addToClearPaths(clearPaths, event.getCompletedPaths());
-
-        metadataHandler.doBatchDelete( clearPaths, filesystems );
+        catch ( Throwable e )
+        {
+            logger.error( "Failed to handle the PromoteCompleteEvent.", e );
+        }
         return message.ack();
     }
 
