@@ -56,52 +56,54 @@ public class FileEventConsumer
 
         logger.info("Got an event: {}", event);
 
-        if ( event.getEventType().equals( FileEventType.STORAGE ) || event.getEventType()
-                                                                          .equals( FileEventType.DELETE ) )
+        try
         {
-            String path = event.getTargetPath();
 
-            if ( !path.endsWith( POM_EXTENSION ) && !path.endsWith( PACKAGE_TARBALL_EXTENSION ) )
+            if ( event.getEventType().equals( FileEventType.STORAGE ) || event.getEventType()
+                                                                              .equals( FileEventType.DELETE ) )
             {
-                return message.ack();
-            }
+                String path = event.getTargetPath();
 
-            final String keyStr = event.getStoreKey();
-            final StoreKey key =  StoreKey.fromString( keyStr );
-
-            if ( hosted != key.getType() )
-            {
-                return message.ack();
-            }
-
-            String clearPath = null;
-
-            if ( path.endsWith( POM_EXTENSION ) )
-            {
-                clearPath = getMetadataPath( path );
-
-                logger.info( "Pom file {} {}, will clean matched metadata file {}, store: {}", path, event.getEventType(), clearPath, keyStr );
-
-            }
-            else if ( path.endsWith( PACKAGE_TARBALL_EXTENSION ) )
-            {
-                clearPath = getPkgMetadataPath( path );
-
-                logger.info( "Tar file {} {}, will clean matched metadata file {}, store: {}", path, event.getEventType(), clearPath, keyStr );
-            }
-
-            if ( hosted == key.getType() )
-            {
-                try
+                if ( !path.endsWith( POM_EXTENSION ) && !path.endsWith( PACKAGE_TARBALL_EXTENSION ) )
                 {
-                    metadataHandler.doDelete(key, clearPath);
+                    return message.ack();
                 }
-                catch ( Throwable e )
+
+                final String keyStr = event.getStoreKey();
+                final StoreKey key =  StoreKey.fromString( keyStr );
+
+                if ( hosted != key.getType() )
                 {
-                    logger.error( "Failed to handle the file event", e );
+                    return message.ack();
                 }
+
+                String clearPath = null;
+
+                if ( path.endsWith( POM_EXTENSION ) )
+                {
+                    clearPath = getMetadataPath( path );
+
+                    logger.info( "Pom file {} {}, will clean matched metadata file {}, store: {}", path, event.getEventType(), clearPath, keyStr );
+
+                }
+                else if ( path.endsWith( PACKAGE_TARBALL_EXTENSION ) )
+                {
+                    clearPath = getPkgMetadataPath( path );
+
+                    logger.info( "Tar file {} {}, will clean matched metadata file {}, store: {}", path, event.getEventType(), clearPath, keyStr );
+                }
+
+                if ( hosted == key.getType() )
+                {
+                   metadataHandler.doDelete(key, clearPath);
+                }
+
             }
 
+        }
+        catch ( Throwable e )
+        {
+            logger.error( "Failed to handle the file event", e );
         }
         return message.ack();
     }
