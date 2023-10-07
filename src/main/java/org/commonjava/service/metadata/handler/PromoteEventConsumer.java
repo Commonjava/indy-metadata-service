@@ -57,19 +57,21 @@ public class PromoteEventConsumer
 
         logger.info( "Got an event: {}", event );
 
-        final String keyStr = event.getTargetStore();
-        final StoreKey key =  StoreKey.fromString( keyStr );
-
-        if ( hosted != key.getType() )
-        {
-            return message.ack();
-        }
-
-        Set<String> clearPaths = new HashSet<>();
-        Set<String> filesystems = new HashSet<>();
-
         try
         {
+
+            final String keyStr = event.getTargetStore();
+            final StoreKey key =  StoreKey.fromString( keyStr );
+
+            if ( hosted != key.getType() )
+            {
+                return message.ack();
+            }
+
+            Set<String> clearPaths = new HashSet<>();
+            Set<String> filesystems = new HashSet<>();
+
+
             addRepoAndAffectedGroups(key, filesystems);
 
             if (event.isPurgeSource()) {
