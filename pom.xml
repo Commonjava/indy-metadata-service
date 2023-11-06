@@ -42,7 +42,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <indy-event.version>1.3</indy-event.version>
+        <indy-model.version>1.4</indy-model.version>
         <infinispan.version>11.0.8.Final</infinispan.version>
         <protostreamVersion>4.3.5.Final</protostreamVersion>
         <quarkus.package.type>uber-jar</quarkus.package.type>
@@ -157,12 +157,17 @@
         <dependency>
             <groupId>org.commonjava.indy.service</groupId>
             <artifactId>indy-event-model</artifactId>
-            <version>${indy-event.version}</version>
+            <version>${indy-model.version}</version>
         </dependency>
         <dependency>
             <groupId>org.commonjava.indy.service</groupId>
             <artifactId>indy-event-model-serializer</artifactId>
-            <version>${indy-event.version}</version>
+            <version>${indy-model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonjava.indy.service</groupId>
+            <artifactId>indy-model-core-java</artifactId>
+            <version>${indy-model.version}</version>
         </dependency>
 
         <dependency>

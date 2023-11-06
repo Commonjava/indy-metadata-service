@@ -17,6 +17,7 @@ package org.commonjava.service.metadata.handler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.commonjava.service.metadata.model.*;
+import org.commonjava.indy.model.core.PathStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

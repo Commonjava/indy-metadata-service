@@ -29,7 +29,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.commonjava.service.metadata.model.PathStyle.hashed;
+import static org.commonjava.indy.model.core.PathStyle.hashed;
+import org.commonjava.indy.model.core.PathStyle;
 
 @ApplicationScoped
 public class IndyPathGenerator

@@ -15,6 +15,8 @@
  */
 package org.commonjava.service.metadata.model;
 
+import org.commonjava.indy.model.core.PathStyle;
+
 public interface PathGenerator
 {
     String getFilePath(StoreKey var1, String var2);
