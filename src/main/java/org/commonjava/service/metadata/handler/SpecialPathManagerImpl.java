@@ -33,13 +33,13 @@ public class SpecialPathManagerImpl implements SpecialPathManager {
     private List<SpecialPathInfo> stdSpecialPaths;
     private Map<String, SpecialPathSet> pkgtypes;
     @Inject
-    private PathGenerator pathGenerator;
+    private IndyPathGenerator pathGenerator;
 
     public SpecialPathManagerImpl() {
         this.initPkgPathSets();
     }
 
-    public SpecialPathManagerImpl(PathGenerator pathGenerator) {
+    public SpecialPathManagerImpl(IndyPathGenerator pathGenerator) {
         this();
         this.pathGenerator = pathGenerator;
     }
