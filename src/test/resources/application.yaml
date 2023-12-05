@@ -50,12 +50,6 @@ kafka:
     bootstrap:
         servers: "localhost:9092"
 
-ispn:
-    enabled: false
-    hotrod:
-        client:
-            config: "/tmp/hotrod-client.properties"
-
 pathmap-api/mp-rest/url: http://localhost
 pathmap-api/mp-rest/scope: javax.inject.Singleton
 
