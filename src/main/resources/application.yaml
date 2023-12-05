@@ -7,7 +7,7 @@ quarkus:
           max-body-size: 500M
 
     package:
-        uber-jar: true
+        type: uber-jar
 
     # Logging (disable console on prod)
     log:
@@ -40,8 +40,6 @@ quarkus:
                 #headers:
                 #    - "x-honeycomb-team=<key>"
                 #    - "x-honeycomb-dataset=<dataset>"
-                logging:
-                    loglevel: debug
 
     oidc-client:
         auth-server-url: "keycloak_server_url/realms/pncredhat"
@@ -69,14 +67,6 @@ quarkus:
 kafka:
     bootstrap:
         servers: "localhost:9092"
-
-ispn:
-    enabled: true
-    hotrod:
-        client:
-            config: "/opt/indy-metadata/hotrod-client.properties"
-    cache:
-        dir: "/opt/indy-metadata"
 
 storage-service-api/mp-rest/url: http://localhost
 storage-service-api/mp-rest/scope: javax.inject.Singleton
@@ -127,10 +117,6 @@ indy_security:
                     value:
                         deserializer: org.commonjava.service.metadata.handler.PathsPromoteCompleteEventDeserializer
 
-    ispn:
-        hotrod:
-            client:
-                config: "/tmp/hotrod-client.properties"
 
     storage-api/mp-rest/url: http://localhost
     storage-api/mp-rest/scope: javax.inject.Singleton

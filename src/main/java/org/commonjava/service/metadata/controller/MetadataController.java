@@ -15,7 +15,6 @@
  */
 package org.commonjava.service.metadata.controller;
 
-import org.commonjava.service.metadata.cache.MetadataCacheManager;
 import org.commonjava.service.metadata.handler.MetadataHandler;
 import org.commonjava.service.metadata.handler.SpecialPathManager;
 import org.commonjava.service.metadata.model.*;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -35,9 +33,6 @@ public class MetadataController
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    MetadataCacheManager cacheManager;
-
-    @Inject
     MetadataHandler metadataHandler;
 
     @Inject
@@ -46,17 +41,17 @@ public class MetadataController
     public MetadataInfo getMetadataInfo( String packageType, String type, String name, String path )
     {
 
-        String storeKeyStr = packageType + ":" + type + ":" + name;
-        MetadataKey key = new MetadataKey( StoreKey.fromString( storeKeyStr ), path );
+        // TODO actually this is not used now and let's implement it later
 
-        return cacheManager.get( key );
+        return null;
     }
 
     public Set<String> getAllPaths( String packageType, String type, String name )
     {
 
-        String storeKeyStr = packageType + ":" + type + ":" + name;
-        return cacheManager.getAllPaths( StoreKey.fromString( storeKeyStr ) );
+        // TODO actually this is not used now and let's implement it later
+
+        return null;
     }
 
     public boolean doDelete(String packageType, String type, String name, String path)
