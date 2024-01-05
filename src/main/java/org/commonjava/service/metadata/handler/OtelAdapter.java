@@ -20,7 +20,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanKind;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class OtelAdapter

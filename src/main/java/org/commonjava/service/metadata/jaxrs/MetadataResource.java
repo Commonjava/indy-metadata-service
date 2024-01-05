@@ -20,18 +20,16 @@ import org.commonjava.service.metadata.controller.MetadataController;
 import org.commonjava.service.metadata.model.MetadataInfo;
 import org.commonjava.service.metadata.model.SpecialPathDTO;
 import org.commonjava.service.metadata.model.SpecialPathInfo;
-import org.commonjava.service.metadata.model.SpecialPathSet;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 
-import java.util.Collection;
 import java.util.Set;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.microprofile.openapi.annotations.enums.ParameterIn.PATH;
 
 @Path( "/api/metadata" )

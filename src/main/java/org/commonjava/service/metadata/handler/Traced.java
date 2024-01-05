@@ -15,7 +15,7 @@
  */
 package org.commonjava.service.metadata.handler;
 
-import javax.interceptor.InterceptorBinding;
+import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.*;
 
 @InterceptorBinding
