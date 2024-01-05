@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.commonjava</groupId>
         <artifactId>service-parent</artifactId>
-        <version>2</version>
+        <version>4</version>
     </parent>
 
     <groupId>org.commonjava.indy.service</groupId>
@@ -222,7 +222,7 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>io.quarkus</groupId>
+                <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <executions>
                     <execution>
