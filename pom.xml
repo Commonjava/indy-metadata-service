@@ -48,6 +48,7 @@
         <httpcoreVersion>4.4.9</httpcoreVersion>
         <httpclientVersion>4.5.13</httpclientVersion>
         <indysecurity.version>1.2-SNAPSHOT</indysecurity.version>
+        <maven.repo.metadata.version>3.9.6</maven.repo.metadata.version>
     </properties>
 
     <dependencies>
@@ -170,12 +171,11 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-repository-metadata</artifactId>
-            <version>3.6.3</version>
+            <version>${maven.repo.metadata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
         </dependency>
 
         <!-- for unit test -->
