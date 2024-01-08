@@ -51,10 +51,10 @@ kafka:
         servers: "localhost:9092"
 
 pathmap-api/mp-rest/url: http://localhost
-pathmap-api/mp-rest/scope: javax.inject.Singleton
+pathmap-api/mp-rest/scope: jakarta.inject.Singleton
 
 repo-service-api/mp-rest/url: http://localhost
-repo-service-api/mp-rest/scope: javax.inject.Singleton
+repo-service-api/mp-rest/scope: jakarta.inject.Singleton
 
 "%dev":
     quarkus:

@@ -69,10 +69,10 @@ kafka:
         servers: "localhost:9092"
 
 storage-service-api/mp-rest/url: http://localhost
-storage-service-api/mp-rest/scope: javax.inject.Singleton
+storage-service-api/mp-rest/scope: jakarta.inject.Singleton
 
 repo-service-api/mp-rest/url: http://localhost
-repo-service-api/mp-rest/scope: javax.inject.Singleton
+repo-service-api/mp-rest/scope: jakarta.inject.Singleton
 
 indy_security:
     enabled: true
@@ -119,7 +119,7 @@ indy_security:
 
 
     storage-api/mp-rest/url: http://localhost
-    storage-api/mp-rest/scope: javax.inject.Singleton
+    storage-api/mp-rest/scope: jakarta.inject.Singleton
 
     indy_security:
         enabled: true

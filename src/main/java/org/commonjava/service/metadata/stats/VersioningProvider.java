@@ -18,9 +18,9 @@ package org.commonjava.service.metadata.stats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Default;
-import javax.inject.Singleton;
-import javax.ws.rs.Produces;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.Produces;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;

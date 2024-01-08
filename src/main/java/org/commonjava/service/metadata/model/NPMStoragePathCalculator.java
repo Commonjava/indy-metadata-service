@@ -21,8 +21,8 @@ import org.commonjava.service.metadata.handler.SpecialPathManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import static org.commonjava.service.metadata.handler.MetadataUtil.NPM_METADATA_NAME;
 import static org.commonjava.service.metadata.handler.PathUtils.normalize;
