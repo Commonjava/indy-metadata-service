@@ -42,7 +42,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <indy-model.version>1.5-SNAPSHOT</indy-model.version>
+        <indy-model.version>2.0</indy-model.version>
         <protostreamVersion>4.3.5.Final</protostreamVersion>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <httpcoreVersion>4.4.9</httpcoreVersion>
