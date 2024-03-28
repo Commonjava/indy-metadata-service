@@ -47,7 +47,6 @@
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <httpcoreVersion>4.4.9</httpcoreVersion>
         <httpclientVersion>4.5.13</httpclientVersion>
-        <indysecurity.version>1.2-SNAPSHOT</indysecurity.version>
         <maven.repo.metadata.version>3.9.6</maven.repo.metadata.version>
     </properties>
 
@@ -213,7 +212,6 @@
         <dependency>
             <groupId>org.commonjava.indy.service</groupId>
             <artifactId>indy-security</artifactId>
-            <version>${indysecurity.version}</version>
         </dependency>
 
     </dependencies>
