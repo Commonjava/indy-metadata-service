@@ -29,6 +29,8 @@ import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.ext.Provider;
 
+import java.time.Duration;
+
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class CustomClientRequestFilter implements ClientRequestFilter
@@ -51,7 +53,7 @@ public class CustomClientRequestFilter implements ClientRequestFilter
             if ( tokens == null || tokens.isAccessTokenExpired() )
             {
                 logger.debug("Security enabled, get oidc Tokens");
-                tokens = client.getTokens().await().indefinitely();
+                tokens = client.getTokens().await().atMost( Duration.ofSeconds( 30 ) );
             }
             requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getAccessToken());
         }
