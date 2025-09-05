@@ -59,11 +59,20 @@ storage-service-api/mp-rest/url: http://localhost
 repo-service-api/mp-rest/url: http://localhost
 ```
 
-### Environment Variables
+## Event Processing
 
-- `KAFKA_BOOTSTRAP_SERVERS`: Kafka broker addresses
-- `STORAGE_SERVICE_API_MP_REST_URL`: Storage service URL
-- `REPO_SERVICE_API_MP_REST_URL`: Repository service URL
+The service processes two types of Kafka events and maintains consistency across repository group hierarchies:
+
+> **Important**: When a metadata file is updated in any repository, the service automatically propagates these changes up through the entire group hierarchy. For example, if a POM file is uploaded to a hosted repository, the metadata will be regenerated not only for that repository but also for all groups that contain it, all the way up to the root group.
+
+### File Events (`file-event` topic)
+- Triggers metadata cleanup when POM files or package tarballs are uploaded/deleted
+- Automatically clears corresponding metadata files in hosted repositories
+- **Group Propagation**: Updates cascade through all repository groups containing the affected repository
+
+### Promote Events (`promote-complete` topic)
+- Handles promotion completion events
+- Manages metadata updates across repository groups
 
 ## Development
 
@@ -109,22 +118,6 @@ docker-compose up
    ```bash
    mvn quarkus:dev
    ```
-
-## Event Processing
-
-The service processes two types of Kafka events and maintains consistency across repository group hierarchies:
-
-> **Important**: When a metadata file is updated in any repository, the service automatically propagates these changes up through the entire group hierarchy. For example, if a POM file is uploaded to a hosted repository, the metadata will be regenerated not only for that repository but also for all groups that contain it, all the way up to the root group.
-
-### File Events (`file-event` topic)
-- Triggers metadata cleanup when POM files or package tarballs are uploaded/deleted
-- Automatically clears corresponding metadata files in hosted repositories
-- **Group Propagation**: Updates cascade through all repository groups containing the affected repository
-
-### Promote Events (`promote-complete` topic)
-- Handles promotion completion events
-- Manages metadata updates across repository groups
-
 
 ## Monitoring & Observability
 
